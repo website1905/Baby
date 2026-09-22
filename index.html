@@ -1,0 +1,877 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <style>
+        :root {
+            --bg-color: #ffe6f0;
+            --text-color: #ff4d88;
+            --accent-color: #ffb3cc;
+            --font-family: 'Comic Sans MS', cursive, sans-serif;
+            --transition-speed: 1.5s;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 1;
+        }
+
+        /* Start Screen */
+        #start-btn {
+            padding: 15px 30px;
+            font-size: 24px;
+            background-color: #ff4d88;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 77, 136, 0.4);
+            margin-top: 40vh;
+            transition: transform 0.3s ease;
+        }
+        #start-btn:hover { transform: scale(1.05); }
+
+        /* Memory Game */
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 15px;
+            margin: 20px auto;
+            justify-content: center;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: var(--accent-color);
+            border-radius: 15px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card.flipped { transform: rotateY(180deg); }
+        .card-face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .card-front { background-color: #ff99bb; font-size: 30px; color: white; }
+        .card-back { transform: rotateY(180deg); background-color: white; }
+        .card-back img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Scroll & Locker */
+        #scroll-section { display: none; margin-top: 30px; animation: fadeIn 1s forwards; }
+        .scroll-text { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px;}
+        
+        .locker { display: inline-block; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative;}
+        .pin-display { width: 100%; height: 40px; font-size: 24px; text-align: center; margin-bottom: 15px; border: 2px solid #ffe6f0; border-radius: 10px; background: #fafafa; letter-spacing: 5px; }
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .num-btn { padding: 15px; font-size: 20px; border: none; background: #ffe6f0; border-radius: 10px; cursor: pointer; color: #ff4d88; transition: 0.2s;}
+        .num-btn:hover { background: #ffb3cc; }
+        
+        .hint-btn { position: absolute; top: 20px; right: -60px; background: none; border: none; font-size: 24px; cursor: pointer; }
+        #thought-bubble { display: none; position: absolute; top: -100px; right: -120px; width: 150px; z-index: 10; animation: float 2s infinite ease-in-out; }
+        #thought-bubble img { width: 100%; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+        /* Expose Phase - Smooth Dark Red */
+        body.expose-theme {
+            --bg-color: #1a0000;
+            --text-color: #ffb3b3;
+            --accent-color: #4d0000;
+            background: linear-gradient(135deg, #2b0000 0%, #1a0000 100%);
+        }
+
+        /* Gallery */
+        .gallery-container {
+            width: 100%;
+            max-width: 400px;
+            height: 700px; /* Adjust based on screenshot aspect ratio */
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            margin: 0 auto;
+        }
+        .gallery-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); /* Very smooth sliding */
+        }
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 15px;
+        }
+        .ctrl-btn { background: #4d0000; color: #ffb3b3; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+
+        /* Scratch Card */
+        #scratch-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 40px auto;
+            display: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        #scratch-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        #scratch-canvas { position: absolute; top: 0; left: 0; cursor: pointer; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- Audio Elements -->
+    <audio id="bgMusic1" src="bg1.mp3" loop></audio>
+    <audio id="bgMusic2" src="bg2.mp3" loop></audio>
+
+    <!-- Start Screen (Required for Audio on GitHub) -->
+    <div id="screen-start" class="screen active">
+        <button id="start-btn" onclick="startExperience()">Click for your surprise! 💖</button>
+    </div>
+
+    <!-- Phase 1: Love Theme -->
+    <div id="screen-love" class="screen">
+        <h2>Match the cards baby! 🎀</h2>
+        <div class="game-board" id="game-board"></div>
+
+        <div id="scroll-section">
+            <div class="scroll-text">
+                <p>Thank you for always being there for me...</p>
+                <p>I have a special gift for you, but you need to open the locker first!</p>
+            </div>
+            
+            <div class="locker">
+                <button class="hint-btn" onclick="toggleHint()" title="My baby's birthday!">💡</button>
+                <div id="thought-bubble">
+                    <img src="thought.png" alt="Hint">
+                </div>
+                
+                <input type="text" id="pin-input" class="pin-display" readonly maxlength="4" placeholder="****">
+                <div class="numpad">
+                    <button class="num-btn" onclick="addPin(1)">1</button>
+                    <button class="num-btn" onclick="addPin(2)">2</button>
+                    <button class="num-btn" onclick="addPin(3)">3</button>
+                    <button class="num-btn" onclick="addPin(4)">4</button>
+                    <button class="num-btn" onclick="addPin(5)">5</button>
+                    <button class="num-btn" onclick="addPin(6)">6</button>
+                    <button class="num-btn" onclick="addPin(7)">7</button>
+                    <button class="num-btn" onclick="addPin(8)">8</button>
+                    <button class="num-btn" onclick="addPin(9)">9</button>
+                    <button class="num-btn" onclick="clearPin()">C</button>
+                    <button class="num-btn" onclick="addPin(0)">0</button>
+                    <button class="num-btn" onclick="checkPin()">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phase 2: Expose Theme -->
+    <div id="screen-expose" class="screen">
+        <h2 style="margin-bottom: 5px;">The Truth.</h2>
+        <p style="font-size: 14px; margin-top: 0;">(Auto-playing...)</p>
+        
+        <div class="gallery-container">
+            <div class="gallery-track" id="gallery-track">
+                <!-- Javascript will inject 25 slides here -->
+            </div>
+        </div>
+        <div class="controls">
+            <button class="ctrl-btn" onclick="prevSlide()">❮ Prev</button>
+            <button class="ctrl-btn" onclick="nextSlide()">Next ❯</button>
+        </div>
+
+        <div id="scratch-container">
+            <img id="scratch-image" src="gift.jpg" alt="Gift">
+            <canvas id="scratch-canvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Audio and Screen Management ---
+        const bg1 = document.getElementById('bgMusic1');
+        const bg2 = document.getElementById('bgMusic2');
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => {
+                s.classList.remove('active');
+                setTimeout(() => s.style.display = 'none', 500); // Wait for fade out
+            });
+            setTimeout(() => {
+                const screen = document.getElementById(screenId);
+                screen.style.display = 'flex';
+                // Small delay to allow display:flex to apply before adding opacity class
+                setTimeout(() => screen.classList.add('active'), 50);
+            }, 500);
+        }
+
+        function startExperience() {
+            bg1.play().catch(e => console.log("Audio play failed:", e));
+            showScreen('screen-love');
+            initGame();
+        }
+
+        // --- 2. Memory Game Logic ---
+        const cardsArray = ['card1.jpg', 'card 2.jpg', 'card 3.jpg', 'card1.jpg', 'card 2.jpg', 'card 3.jpg'];
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let matchedPairs = 0;
+
+        function initGame() {
+            const board = document.getElementById('game-board');
+            board.innerHTML = '';
+            // Shuffle
+            cardsArray.sort(() => 0.5 - Math.random());
+            
+            cardsArray.forEach((img, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.name = img;
+                card.innerHTML = `
+                    <div class="card-face card-front">?</div>
+                    <div class="card-face card-back"><img src="${img}" alt="card"></div>
+                `;
+                card.addEventListener('click', flipCard);
+                board.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flipped');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.name === secondCard.dataset.name;
+            isMatch ? disableHere is the complete, compiled code for your interactive website. 
+
+### Why the audio wasn't working on GitHub:
+Modern web browsers (like Chrome and Safari) have strict autoplay policies that prevent audio from playing automatically without the user interacting with the page first. To fix this, I have added an initial "Start" button. Once he clicks it, the browser gives permission for `bg1.mp3` to play, and subsequently `bg2.mp3`.
+
+### Instructions:
+1. Create a file named `index.html` in your GitHub repository.
+2. Copy and paste the entire code below into that file.
+3. Ensure all your files (`1.jpg` to `25.jpg`, `bg1.mp3`, `bg2.mp3`, `card1.jpg`, `card2.jpg`, `card3.jpg`, `thought.png`, and `gift.jpg`) are in the **exact same folder** as `index.html` and that the extensions and casing match exactly (e.g., lowercase `.jpg` vs `.JPG`).
+
+### The Code (`index.html`)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You 💖</title>
+    <style>
+        :root {
+            --bg-color: #ffd1dc; /* Soft pink */
+            --text-color: #d1495b;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            transition: background-color 2s ease, color 2s ease;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .dark-theme {
+            --bg-color: #2b0000; /* Dark red/fire */
+            --text-color: #ff4d4d;
+        }
+
+        .hidden { display: none !important; }
+        
+        .section {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Start Screen */
+        #start-screen {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        button.start-btn {
+            background-color: #ff6b81;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 129, 0.4);
+            transition: transform 0.2s;
+        }
+        button.start-btn:active { transform: scale(0.95); }
+
+        /* Memory Game */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card.flipped { transform: rotateY(180deg); }
+        .card img {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            position: absolute;
+            backface-visibility: hidden;
+            object-fit: cover;
+        }
+        .card-front {
+            background-color: #ff9fb3;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Scroll Text */
+        .scroll-container {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        /* Numpad */
+        .locker-container { margin-top: 40px; }
+        .display {
+            font-size: 30px;
+            letter-spacing: 10px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            min-height: 40px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 70px);
+            gap: 15px;
+            justify-content: center;
+        }
+        .numpad button {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            background: #ff6b81;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .numpad button:active { background: #ff4757; }
+        .hint-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #ffa502;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+        #thought-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            background: white;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        #thought-popup img { max-width: 200px; border-radius: 10px; }
+
+        /* Gallery */
+        .gallery-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 600px; /* Adjust based on screenshot ratio */
+            margin: 20px auto;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: #000;
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: left 0.8s ease-in-out;
+        }
+        .slide.active { left: 0; }
+        .slide.prev { left: -100%; }
+        
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .controls button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Scratch Card */
+        .scratch-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 40px auto;
+        }
+        .scratch-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        #scratch-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audio Elements -->
+    <audio id="bg1" src="bg1.mp3" loop></audio>
+    <audio id="bg2" src="bg2.mp3" loop></audio>
+
+    <!-- Start Button to fix Audio Policy -->
+    <div id="start-screen" class="section">
+        <button class="start-btn" onclick="startExperience()">Click for a Surprise 💖</button>
+    </div>
+
+    <!-- Phase 1: Memory Game -->
+    <div id="phase1" class="section hidden">
+        <h2>Match our memories 💕</h2>
+        <div class="memory-grid" id="grid"></div>
+        
+        <!-- Scroll (Appears after game) -->
+        <div id="scroll" class="scroll-container hidden">
+            <p>Thank you for being there for me...</p>
+            <p>I have a special gift for you, but you have to unlock it!</p>
+            <button class="start-btn" style="margin-top: 15px;" onclick="showLocker()">Unlock Gift 🔐</button>
+        </div>
+    </div>
+
+    <!-- Phase 2: Locker -->
+    <div id="phase2" class="section hidden">
+        <h2>Enter the secret code</h2>
+        <div class="locker-container">
+            <div class="display" id="pass-display">_ _ _ _</div>
+            <div class="numpad">
+                <button onclick="pressKey(1)">1</button>
+                <button onclick="pressKey(2)">2</button>
+                <button onclick="pressKey(3)">3</button>
+                <button onclick="pressKey(4)">4</button>
+                <button onclick="pressKey(5)">5</button>
+                <button onclick="pressKey(6)">6</button>
+                <button onclick="pressKey(7)">7</button>
+                <button onclick="pressKey(8)">8</button>
+                <button onclick="pressKey(9)">9</button>
+                <button onclick="clearKey()">C</button>
+                <button onclick="pressKey(0)">0</button>
+                <button onclick="checkCode()">OK</button>
+            </div>
+            <button class="hint-btn" onclick="toggleHint()">My baby's birthday 💭</button>
+        </div>
+    </div>
+
+    <!-- Hint Popup -->
+    <div id="thought-popup" class="hidden">
+        <img src="thought.png" alt="Hint">
+        <br>
+        <button onclick="toggleHint()" style="margin-top: 10px; border:none; padding:5px 15px; border-radius:5px;">Close</button>
+    </div>
+
+    <!-- Phase 3: The Reveal -->
+    <div id="phase3" class="section hidden">
+        <h2 style="color: #fff;">The Truth.</h2>
+        <div class="gallery-container" id="gallery">
+            <!-- Images injected via JS -->
+        </div>
+        <div class="controls">
+            <button onclick="manualSlide(-1)">❮ Prev</button>
+            <button onclick="manualSlide(1)">Next ❯</button>
+        </div>
+    </div>
+
+    <!-- Phase 4: Scratch Card -->
+    <div id="phase4" class="section hidden">
+        <h2 style="color: #fff;">Here is your final gift. Scratch to reveal.</h2>
+        <div class="scratch-container">
+            <img src="gift.jpg" class="scratch-image" alt="Gift">
+            <canvas id="scratch-canvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        /* --- State Variables --- */
+        let code = "";
+        const correctCode = "2309";
+        
+        /* --- Audio & Start Logic --- */
+        function startExperience() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('phase1').classList.remove('hidden');
+            document.getElementById('bg1').play();
+            initGame();
+        }
+
+        /* --- Memory Game Logic --- */
+        const cardsArray = ['card1.jpg', 'card1.jpg', 'card2.jpg', 'card2.jpg', 'card3.jpg', 'card3.jpg'];
+        let firstCard = null, secondCard = null;
+        let matches = 0;
+        let lockBoard = false;
+
+        function initGame() {
+            const grid = document.getElementById('grid');
+            // Shuffle array
+            cardsArray.sort(() => 0.5 - Math.random());
+            
+            cardsArray.forEach((imgSrc) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.image = imgSrc;
+                card.innerHTML = `
+                    <div class="card-front">?</div>
+                    <div class="card-back"><img src="${imgSrc}" alt="Card"></div>
+                `;
+                card.addEventListener('click', flipCard);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flipped');
+
+            if (!firstCard) {
+                firstCard = this;
+                return;
+            }
+            secondCard = this;
+            checkMatch();
+        }
+
+        function checkMatch() {
+            let isMatch = firstCard.dataset.image === secondCard.dataset.image;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            resetBoard();
+            matches++;
+            if (matches === 3) {
+                setTimeout(() => {
+                    document.getElementById('scroll').classList.remove('hidden');
+                }, 1000);
+            }
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 1000);
+        }
+
+        function resetBoard() {
+            [firstCard, secondCard, lockBoard] = [null, null, false];
+        }
+
+        /* --- Locker Logic --- */
+        function showLocker() {
+            document.getElementById('phase1').classList.add('hidden');
+            document.getElementById('phase2').classList.remove('hidden');
+        }
+
+        function pressKey(num) {
+            if (code.length < 4) {
+                code += num;
+                updateDisplay();
+            }
+        }
+        function clearKey() {
+            code = "";
+            updateDisplay();
+        }
+        function updateDisplay() {
+            let displayStr = code.split('').join(' ');
+            while (displayStr.length < 7) { displayStr += " _"; }
+            document.getElementById('pass-display').innerText = displayStr;
+        }
+
+        function toggleHint() {
+            document.getElementById('thought-popup').classList.toggle('hidden');
+        }
+
+        function checkCode() {
+            if (code === correctCode) {
+                document.getElementById('phase2').classList.add('hidden');
+                triggerExpose();
+            } else {
+                document.getElementById('pass-display').innerText = "WRONG";
+                document.getElementById('pass-display').style.color = "red";
+                setTimeout(() => {
+                    document.getElementById('pass-display').style.color = "var(--text-color)";
+                    clearKey();
+                }, 1000);
+            }
+        }
+
+        /* --- Reveal & Gallery Logic --- */
+        let currentSlide = 1;
+        let slideInterval;
+
+        function triggerExpose() {
+            // Theme change
+            document.body.classList.add('dark-theme');
+            document.getElementById('bg1').pause();
+            document.getElementById('bg2').play();
+            
+            document.getElementById('phase3').classList.remove('hidden');
+            
+            // Build Gallery
+            const gallery = document.getElementById('gallery');
+            for(let i = 1; i <= 25; i++) {
+                const img = document.createElement('img');
+                img.src = `${i}.jpg`;
+                img.classList.add('slide');
+                img.id = `slide-${i}`;
+                if(i === 1) img.classList.add('active');
+                gallery.appendChild(img);
+            }
+
+            // Start auto slide
+            slideInterval = setInterval(() => { nextSlide() }, 3000);
+        }
+
+        function nextSlide() {
+            let oldSlide = document.getElementById(`slide-${currentSlide}`);
+            oldSlide.classList.remove('active');
+            oldSlide.classList.add('prev');
+
+            currentSlide++;
+            
+            if (currentSlide > 25) {
+                clearInterval(slideInterval);
+                showScratchCard();
+                return;
+            }
+            
+            let newSlide = document.getElementById(`slide-${currentSlide}`);
+            newSlide.classList.remove('prev');
+            newSlide.classList.add('active');
+        }
+
+        function manualSlide(dir) {
+            clearInterval(slideInterval); // Stop auto if user interacts
+            
+            let oldSlide = document.getElementById(`slide-${currentSlide}`);
+            oldSlide.classList.remove('active');
+            if(dir > 0) oldSlide.classList.add('prev');
+            
+            currentSlide += dir;
+            if (currentSlide < 1) currentSlide = 1;
+            
+            if (currentSlide > 25) {
+                showScratchCard();
+                return;
+            }
+
+            let newSlide = document.getElementById(`slide-${currentSlide}`);
+            newSlide.classList.remove('prev');
+            newSlide.classList.add('active');
+        }
+
+        /* --- Scratch Card Logic --- */
+        function showScratchCard() {
+            document.getElementById('phase3').classList.add('hidden');
+            document.getElementById('phase4').classList.remove('hidden');
+            initScratch();
+        }
+
+        function initScratch() {
+            const canvas = document.getElementById('scratch-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to match CSS size
+            canvas.width = 300;
+            canvas.height = 300;
+            
+            // Fill with dark gray cover
+            ctx.fillStyle = '#444';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add instructions on top
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Scratch Here', 150, 150);
+
+            let isDrawing = false;
+
+            function scratch(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2, false);
+                ctx.fill();
+            }
+
+            canvas.addEventListener('mousedown', () => isDrawing = true);
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mousemove', scratch);
+            
+            canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); });
+            canvas.addEventListener('touchend', () => isDrawing = false);
+            canvas.addEventListener('touchmove', scratch);
+        }
+    </script>
+</body>
+</html>
