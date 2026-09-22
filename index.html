@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ffd1dc; 
+            background-color: #ffd1dc; /* Soft pastel pink */
             transition: background-color 2s ease, background 2s ease;
             overflow-x: hidden;
             display: flex;
@@ -26,11 +26,19 @@
         }
 
         .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 1.5s ease forwards; }
         
+        /* Animation for scrolling elements */
+        .fade-in { animation: fadeIn 1.5s ease forwards; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* NEW: Dedicated animation for fixed centered popups to fix the layout bug */
+        .pop-in { animation: popIn 0.8s ease forwards; }
+        @keyframes popIn {
+            from { opacity: 0; transform: translate(-50%, -40%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
         }
 
         /* --- START SCREEN --- */
@@ -72,7 +80,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
-            margin-top: 30px;
+            margin-top: 20px;
             perspective: 1000px;
         }
         .memory-card {
@@ -106,78 +114,90 @@
             font-size: 40px;
         }
 
-        /* Scroll Text - HUGE AND LONG */
+        /* Scroll Text */
         #scroll-container {
-            margin-top: 40px;
+            margin-top: 30px;
             background: rgba(255, 255, 255, 0.95);
             padding: 40px 30px;
             border-radius: 20px;
             border: 3px dashed #ff69b4;
             opacity: 0;
-            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.2);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
+            margin-bottom: 40px;
+        }
+        
+        #read-next-btn {
+            margin-top: 25px;
+            padding: 12px 25px;
+            font-size: 18px;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+            font-weight: bold;
         }
 
-        /* Keypad - FIXED POPUP IN CENTER */
+        /* Keypad Popup */
         #locker-container {
             position: fixed;
-            top: 0; bottom: 0; left: 0; right: 0;
-            margin: auto; /* Centers perfectly */
-            width: 320px;
-            height: fit-content;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             background: white;
-            padding: 30px 20px;
+            padding: 25px;
             border-radius: 20px;
-            /* The 9999px box-shadow creates a dark overlay behind it */
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.7), 0 15px 35px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            z-index: 1000;
             opacity: 0;
-            z-index: 500;
+            width: 90%;
+            max-width: 320px;
+            box-sizing: border-box; /* Added to ensure padding doesn't affect width */
         }
         #display {
             width: 100%;
             height: 50px;
             background: #f0f0f0;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-radius: 10px;
-            font-size: 32px;
+            font-size: 28px;
             line-height: 50px;
-            letter-spacing: 8px;
+            letter-spacing: 5px;
             text-align: center;
             color: black;
-            font-weight: bold;
         }
         .keypad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
         .key {
             padding: 15px;
-            font-size: 22px;
+            font-size: 20px;
             background: #ffb6c1;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             transition: background 0.2s;
             color: black;
-            font-weight: bold;
         }
         .key:active { background: #ff69b4; }
         
         .hint-container {
-            margin-top: 20px;
+            margin-top: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 10px;
         }
         #hint-btn {
             background: #ff69b4;
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 15px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 14px;
         }
         #thought-popup {
             position: fixed;
@@ -187,11 +207,20 @@
             padding: 20px;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            z-index: 1000;
+            z-index: 2000;
             display: none;
             text-align: center;
         }
         #thought-popup img { max-width: 250px; border-radius: 10px; }
+
+        /* Overlay to darken background when popup is active */
+        #popup-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 500;
+            display: none;
+        }
 
         /* --- PHASE 2: EXPOSE THEME --- */
         #phase2 {
@@ -219,7 +248,7 @@
         .slides {
             display: flex;
             height: 100%;
-            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); 
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .slide {
             min-width: 100%;
@@ -245,19 +274,20 @@
         }
         .ctrl-btn:active { background: white; color: black; }
 
-        /* Scratch Card - FIXED POPUP IN CENTER */
+        /* Scratch Card Popup */
         #scratch-container {
             position: fixed;
-            top: 0; bottom: 0; left: 0; right: 0;
-            margin: auto;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             width: 320px;
             height: 320px;
-            border-radius: 15px;
-            overflow: hidden;
-            /* The 9999px box-shadow creates a dark overlay hiding the slider behind it */
-            box-shadow: 0 0 0 9999px rgba(0,0,0,0.85), 0 15px 40px rgba(0,0,0,1);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+            z-index: 1000;
             display: none;
-            z-index: 600;
+            background: white;
+            border: 4px solid #fff;
+            box-sizing: border-box; /* Added to protect layout */
         }
         #gift-image {
             width: 100%;
@@ -265,6 +295,7 @@
             object-fit: cover;
             position: absolute;
             top: 0; left: 0;
+            border-radius: 16px;
         }
         #scratch-pad {
             position: absolute;
@@ -273,7 +304,16 @@
             height: 100%;
             z-index: 2;
             cursor: pointer;
-            transition: opacity 0.8s ease; /* For smooth fading when 40% is reached */
+            border-radius: 16px;
+        }
+        #scratch-text {
+            position: absolute;
+            bottom: -40px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
         }
         
     </style>
@@ -293,6 +333,9 @@
         <button id="start-btn">Click for your surprise! 💖✨</button>
     </div>
 
+    <!-- Background overlay for popups -->
+    <div id="popup-overlay"></div>
+
     <!-- PHASE 1 -->
     <div id="phase1" class="hidden">
         <h2 style="color: #ff1493; margin-top: 10px;">Let's play a little game first, my love!</h2>
@@ -302,18 +345,20 @@
         </div>
 
         <div id="scroll-container" class="hidden">
-            <h2 style="color: #ff1493; margin-top:0; font-size: 36px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">To My "Loyal" Baby...</h2>
-            <p style="color: #333; line-height: 1.8; font-size: 22px; font-weight: 500;">
-                Thank you for being there for me. Thank you for all the memories we've shared, 
-                for the late night talks, and for every moment you made me feel special. <br><br>
-                You thought I was just blindly in love, didn't you? You thought you were so smart 
-                and could hide things from me forever. <br><br>
-                I have a very special surprise locked away just for you. Something you truly deserve.
+            <h2 style="color: #ff1493; margin-top:0; font-size: 32px;">My Dearest Savar... 🥺💖</h2>
+            <p style="color: #555; line-height: 1.8; font-size: 20px; text-align: left;">
+                Happy Birthday to my whole entire world! ✨<br><br>
+                Since the moment you stepped into my life, every single day has felt like a fairy tale. You are my sunshine, my safe place, and my biggest blessing. Thank you for holding my hand through absolutely everything, for your warm hugs, and for making me feel like the luckiest girl alive. 
+                <br><br>
+                I love you more than words could ever explain, baby. You mean everything to me, and I wanted to make this day as special as you are to me. 
+                <br><br>
+                I have a very special little surprise locked away just for you... Are you ready to see it? 🥰❤️
             </p>
+            <button id="read-next-btn" onclick="showLocker()">Unlock Surprise 🔐</button>
         </div>
 
+        <!-- Locker Popup -->
         <div id="locker-container" class="hidden">
-            <h3 style="margin-top: 0; color: #ff1493; text-align: center;">Enter Code to Unlock</h3>
             <div id="display"></div>
             <div class="keypad">
                 <button class="key" onclick="pressKey(1)">1</button>
@@ -327,7 +372,7 @@
                 <button class="key" onclick="pressKey(9)">9</button>
                 <button class="key" onclick="clearKey()">C</button>
                 <button class="key" onclick="pressKey(0)">0</button>
-                <button class="key" style="background: #ff69b4; color:white;" onclick="checkCode()">OK</button>
+                <button class="key" style="background: #ff69b4; color:white; font-weight:bold;" onclick="checkCode()">OK</button>
             </div>
             <div class="hint-container">
                 <button id="hint-btn" onclick="document.getElementById('thought-popup').style.display='block'">Hint: My baby's birthday</button>
@@ -344,8 +389,8 @@
 
     <!-- PHASE 2 -->
     <div id="phase2" class="hidden">
-        <h2 style="margin-top: 10px; font-size: 32px;">The Truth.</h2>
-        <p style="font-style: italic; opacity: 0.8; margin-bottom: 25px; font-size: 18px;">Did you really think I wouldn't find out?</p>
+        <h2 style="margin-top: 10px;">The Truth.</h2>
+        <p style="font-style: italic; opacity: 0.8; margin-bottom: 25px;">Did you really think I wouldn't find out?</p>
         
         <div class="slider-container">
             <div class="slides" id="slides-track">
@@ -358,10 +403,11 @@
             <button class="ctrl-btn" onclick="nextSlide()">Next ❯</button>
         </div>
 
+        <!-- Scratch Card Popup -->
         <div id="scratch-container">
             <img src="gift.jpg" id="gift-image" alt="Gift">
             <canvas id="scratch-pad"></canvas>
-            <p id="scratch-text" style="position: absolute; bottom: 10px; width: 100%; text-align: center; color: white; font-size: 22px; font-weight: bold; pointer-events: none; z-index: 3; text-shadow: 2px 2px 4px black;">Scratch to reveal</p>
+            <p id="scratch-text">Scratch to reveal</p>
         </div>
     </div>
 
@@ -377,13 +423,16 @@
                 
                 const playPromise = audio1.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => console.log("Audio 1 failed", error));
+                    playPromise.catch(error => {
+                        console.log("Audio 1 failed to play. Continuing without music.", error);
+                    });
                 }
                 initMemoryGame();
             });
 
-            // --- MEMORY GAME ---
-            const cardsArray = ['card1.jpg', 'card%202.jpg', 'card%203.jpg', 'card1.jpg', 'card%202.jpg', 'card%203.jpg'];
+            // --- MEMORY GAME LOGIC ---
+            // Reverted names to EXACTLY match your files so they don't break
+            const cardsArray = ['card1.jpg', 'card 2.jpg', 'card 3.jpg', 'card1.jpg', 'card 2.jpg', 'card 3.jpg'];
             let hasFlippedCard = false;
             let lockBoard = false;
             let firstCard, secondCard;
@@ -437,13 +486,9 @@
                     setTimeout(() => {
                         const scroll = document.getElementById('scroll-container');
                         scroll.classList.remove('hidden');
-                        scroll.classList.add('fade-in');
+                        scroll.classList.add('fade-in'); // fade-in is perfectly fine for this relative element
                         
-                        setTimeout(() => {
-                            const locker = document.getElementById('locker-container');
-                            locker.classList.remove('hidden');
-                            locker.classList.add('fade-in');
-                        }, 5000); // Gives 5 seconds to read the huge scroll before locker pops up
+                        scroll.scrollIntoView({ behavior: 'smooth', block: 'end' });
                     }, 800);
                 }
             }
@@ -461,6 +506,14 @@
                 [hasFlippedCard, lockBoard] = [false, false];
                 [firstCard, secondCard] = [null, null];
             }
+
+            // --- SHOW LOCKER POPUP ---
+            window.showLocker = function() {
+                document.getElementById('popup-overlay').style.display = 'block';
+                const locker = document.getElementById('locker-container');
+                locker.classList.remove('hidden');
+                locker.classList.add('pop-in'); // Using new pop-in to prevent layout break
+            };
 
             // --- KEYPAD LOGIC ---
             window.codeInput = "";
@@ -493,6 +546,9 @@
 
             // --- PHASE 2 TRANSITION ---
             function triggerPhase2() {
+                document.getElementById('popup-overlay').style.display = 'none';
+                document.getElementById('locker-container').classList.add('hidden');
+                
                 audio1.pause();
                 const playPromise = audio2.play();
                 if (playPromise !== undefined) {
@@ -511,19 +567,22 @@
                 }, 500);
             }
 
-            // --- SMOOTH SLIDER LOGIC (Excluding 23 & 25) ---
+            // --- SMOOTH SLIDER LOGIC ---
             let currentSlide = 0;
-            const validSlides = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,24];
-            const totalSlides = validSlides.length; // 23 slides total
+            const allowedImages = [];
+            for(let i = 1; i <= 24; i++) {
+                if(i !== 23) allowedImages.push(i);
+            }
+            const totalSlides = allowedImages.length;
             const track = document.getElementById('slides-track');
             let slideInterval;
             let isAutoPlaying = true;
 
             function initSlider() {
-                validSlides.forEach((num) => {
+                allowedImages.forEach(imgNum => {
                     const slide = document.createElement('div');
                     slide.classList.add('slide');
-                    slide.style.backgroundImage = `url('${num}.jpg')`;
+                    slide.style.backgroundImage = `url('${imgNum}.jpg')`;
                     track.appendChild(slide);
                 });
                 startAutoSlide();
@@ -533,10 +592,13 @@
                 track.style.transform = `translateX(-${currentSlide * 100}%)`;
                 
                 if (currentSlide === totalSlides - 1) {
-                    const scratch = document.getElementById('scratch-container');
-                    scratch.style.display = 'block';
-                    scratch.classList.add('fade-in');
-                    initScratchCard();
+                    setTimeout(() => {
+                        document.getElementById('popup-overlay').style.display = 'block';
+                        const scratch = document.getElementById('scratch-container');
+                        scratch.style.display = 'block';
+                        scratch.classList.add('pop-in'); // Using new pop-in to prevent layout break
+                        initScratchCard();
+                    }, 2000); 
                 }
             }
 
@@ -572,20 +634,24 @@
                 clearInterval(slideInterval);
             }
 
-            // --- 40% SCRATCH CARD LOGIC ---
+            // --- SCRATCH CARD LOGIC (40% AUTO REVEAL) ---
             function initScratchCard() {
                 const canvas = document.getElementById('scratch-pad');
-                const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                const ctx = canvas.getContext('2d');
                 
                 canvas.width = 320;
                 canvas.height = 320;
 
                 ctx.fillStyle = '#888888';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.font = "26px Arial";
+                ctx.fillStyle = "#ffffff";
+                ctx.textAlign = "center";
+                ctx.fillText("Scratch Here", canvas.width/2, canvas.height/2);
 
                 let isDrawing = false;
-                let scratchCount = 0;
-                let isRevealed = false;
+                let isRevealed = false; 
 
                 function getMousePos(canvas, evt) {
                     var rect = canvas.getBoundingClientRect();
@@ -596,7 +662,7 @@
                 }
 
                 function startPosition(e) {
-                    if(isRevealed) return;
+                    if (isRevealed) return;
                     isDrawing = true;
                     scratch(e);
                 }
@@ -604,7 +670,7 @@
                 function endPosition() {
                     isDrawing = false;
                     ctx.beginPath();
-                    checkScratchCompletion();
+                    if (!isRevealed) checkReveal();
                 }
 
                 function scratch(e) {
@@ -621,39 +687,30 @@
                     ctx.stroke();
                     ctx.beginPath();
                     ctx.moveTo(pos.x, pos.y);
-
-                    // Periodically check while scratching so they don't have to lift their finger
-                    scratchCount++;
-                    if (scratchCount % 20 === 0) {
-                        checkScratchCompletion();
-                    }
                 }
 
-                function checkScratchCompletion() {
-                    if (isRevealed) return;
-                    
-                    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const pixels = imgData.data;
+                function checkReveal() {
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
                     let transparentPixels = 0;
                     
-                    // Alpha channel is the 4th value in the array (0 = transparent, 255 = solid)
-                    for (let i = 3; i < pixels.length; i += 4) {
-                        if (pixels[i] === 0) {
+                    for (let i = 3; i < data.length; i += 4) {
+                        if (data[i] < 128) {
                             transparentPixels++;
                         }
                     }
+                    
+                    const totalPixels = canvas.width * canvas.height;
+                    const percentScratched = transparentPixels / totalPixels;
 
-                    const totalPixels = pixels.length / 4;
-                    const percentScratched = (transparentPixels / totalPixels) * 100;
-
-                    if (percentScratched >= 40) {
+                    if (percentScratched >= 0.40) {
                         isRevealed = true;
-                        document.getElementById('scratch-text').style.display = 'none'; // hide the text overlay
-                        canvas.style.opacity = '0'; // Smooth fade out
-                        
+                        canvas.style.transition = "opacity 0.6s ease";
+                        canvas.style.opacity = "0";
+                        document.getElementById('scratch-text').style.display = 'none';
                         setTimeout(() => {
                             canvas.style.display = 'none';
-                        }, 800); // Matches transition time
+                        }, 600);
                     }
                 }
 
