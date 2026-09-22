@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For My Baby ❤️</title>
     <style>
-        /* --- GLOBAL STYLES & SMOOTH TRANSITIONS --- */
+        /* --- GLOBAL STYLES --- */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ffc0cb; /* Initial Pink */
-            transition: background-color 3s ease, background 3s ease;
+            background-color: #ffd1dc; /* Soft pastel pink */
+            transition: background-color 2s ease, background 2s ease;
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
@@ -20,8 +20,8 @@
         }
 
         body.expose-theme {
-            background-color: #4a0000;
-            background: linear-gradient(135deg, #4a0000 0%, #8b0000 100%);
+            background-color: #3a0000;
+            background: linear-gradient(135deg, #2b0000 0%, #5c0000 100%);
             color: white;
         }
 
@@ -43,18 +43,20 @@
             align-items: center;
             z-index: 1000;
         }
+        
         #start-btn {
-            padding: 15px 40px;
-            font-size: 24px;
-            background: #ff69b4;
-            color: white;
+            padding: 20px 40px;
+            font-size: 22px;
+            background: #a87eb6;
+            color: #d4f0ff;
             border: none;
-            border-radius: 30px;
+            border-radius: 40px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
-            transition: transform 0.3s ease;
+            box-shadow: 0 8px 20px rgba(168, 126, 182, 0.4);
+            transition: transform 0.2s ease, background 0.3s;
+            font-weight: bold;
         }
-        #start-btn:hover { transform: scale(1.05); }
+        #start-btn:active { transform: scale(0.95); }
 
         /* --- PHASE 1: LOVE THEME --- */
         #phase1 {
@@ -94,6 +96,7 @@
             transform: rotateY(180deg);
             background-size: cover;
             background-position: center;
+            background-color: white;
         }
         .back-face {
             background: #ffb6c1;
@@ -101,13 +104,12 @@
             justify-content: center;
             align-items: center;
             font-size: 40px;
-            color: white;
         }
 
         /* Scroll Text */
         #scroll-container {
             margin-top: 40px;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             padding: 30px;
             border-radius: 15px;
             border: 2px dashed #ff69b4;
@@ -134,6 +136,7 @@
             line-height: 50px;
             letter-spacing: 5px;
             text-align: center;
+            color: black;
         }
         .keypad {
             display: grid;
@@ -148,6 +151,7 @@
             border-radius: 10px;
             cursor: pointer;
             transition: background 0.2s;
+            color: black;
         }
         .key:active { background: #ff69b4; }
         
@@ -165,6 +169,7 @@
             padding: 10px 20px;
             border-radius: 15px;
             cursor: pointer;
+            font-size: 14px;
         }
         #thought-popup {
             position: fixed;
@@ -176,8 +181,9 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             z-index: 100;
             display: none;
+            text-align: center;
         }
-        #thought-popup img { max-width: 200px; border-radius: 10px; }
+        #thought-popup img { max-width: 250px; border-radius: 10px; }
 
         /* --- PHASE 2: EXPOSE THEME --- */
         #phase2 {
@@ -194,18 +200,18 @@
         .slider-container {
             position: relative;
             width: 100%;
-            max-width: 400px;
+            max-width: 350px;
             margin: 0 auto;
             aspect-ratio: 9/16;
             overflow: hidden;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            background: #000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            background: #111;
         }
         .slides {
             display: flex;
             height: 100%;
-            transition: transform 0.8s ease-in-out;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); /* Very smooth sliding */
         }
         .slide {
             min-width: 100%;
@@ -221,15 +227,15 @@
             gap: 20px;
         }
         .ctrl-btn {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
             color: white;
             border: 1px solid white;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 25px;
+            border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        .ctrl-btn:hover { background: white; color: black; }
+        .ctrl-btn:active { background: white; color: black; }
 
         /* Scratch Card */
         #scratch-container {
@@ -262,26 +268,30 @@
 </head>
 <body>
 
-    <!-- Audio Elements -->
-    <audio id="bg1" loop src="bg1.mp3"></audio>
-    <audio id="bg2" loop src="bg2.mp3"></audio>
+    <!-- Audio Elements - Preloaded safely -->
+    <audio id="bg1" loop preload="auto">
+        <source src="bg1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bg2" loop preload="auto">
+        <source src="bg2.mp3" type="audio/mpeg">
+    </audio>
 
-    <!-- Start Screen (To fix Autoplay issues) -->
+    <!-- Start Screen -->
     <div id="start-screen">
-        <button id="start-btn">Open Surprise For My Baby ❤️</button>
+        <button id="start-btn">Click for your surprise! 💖✨</button>
     </div>
 
-    <!-- PHASE 1: LOVE THEME -->
+    <!-- PHASE 1 -->
     <div id="phase1" class="hidden">
-        <h2 style="color: #ff1493;">Let's play a little game first, my love!</h2>
+        <h2 style="color: #ff1493; margin-top: 10px;">Let's play a little game first, my love!</h2>
         
         <div class="memory-game" id="memory-game">
-            <!-- Cards generated by JS -->
+            <!-- Cards injected by JS -->
         </div>
 
         <div id="scroll-container" class="hidden">
             <h3 style="color: #ff1493; margin-top:0;">Thank you...</h3>
-            <p style="color: #555; line-height: 1.6;">
+            <p style="color: #555; line-height: 1.6; font-size: 18px;">
                 Thank you for being there for me. Thank you for all the memories we've shared. 
                 I have a very special surprise locked away just for you.
             </p>
@@ -301,29 +311,29 @@
                 <button class="key" onclick="pressKey(9)">9</button>
                 <button class="key" onclick="clearKey()">C</button>
                 <button class="key" onclick="pressKey(0)">0</button>
-                <button class="key" style="background: #ff69b4; color:white;" onclick="checkCode()">OK</button>
+                <button class="key" style="background: #ff69b4; color:white; font-weight:bold;" onclick="checkCode()">OK</button>
             </div>
             <div class="hint-container">
-                <button id="hint-btn">Hint: My baby's birthday</button>
+                <button id="hint-btn" onclick="document.getElementById('thought-popup').style.display='block'">Hint: My baby's birthday</button>
             </div>
         </div>
     </div>
 
     <!-- Hint Popup -->
     <div id="thought-popup">
-        <img src="thought.png" alt="Thought Bubble">
+        <img src="thought.png" alt="Hint" onerror="this.src=''">
         <br>
-        <button onclick="document.getElementById('thought-popup').style.display='none'" style="margin-top:10px; padding:5px 15px; border-radius:10px; border:none; background:#ffb6c1;">Close</button>
+        <button onclick="document.getElementById('thought-popup').style.display='none'" style="margin-top:15px; padding:10px 25px; border-radius:20px; border:none; background:#ffb6c1; font-weight:bold; cursor:pointer;">Close</button>
     </div>
 
-    <!-- PHASE 2: EXPOSE THEME -->
+    <!-- PHASE 2 -->
     <div id="phase2" class="hidden">
-        <h2>The Truth.</h2>
-        <p style="font-style: italic; opacity: 0.8;">Did you really think I wouldn't find out?</p>
+        <h2 style="margin-top: 10px;">The Truth.</h2>
+        <p style="font-style: italic; opacity: 0.8; margin-bottom: 25px;">Did you really think I wouldn't find out?</p>
         
         <div class="slider-container">
             <div class="slides" id="slides-track">
-                <!-- Slides generated by JS -->
+                <!-- Slides injected by JS -->
             </div>
         </div>
         
@@ -335,277 +345,283 @@
         <div id="scratch-container">
             <img src="gift.jpg" id="gift-image" alt="Gift">
             <canvas id="scratch-pad"></canvas>
-            <p style="position: absolute; bottom: -30px; width: 100%; text-align: center; color: white;">Scratch to reveal your gift.</p>
+            <p style="position: absolute; bottom: -30px; width: 100%; text-align: center; color: white;">Scratch to reveal</p>
         </div>
     </div>
 
     <script>
-        /* --- GLOBAL VARIABLES & START UP --- */
-        let audio1 = document.getElementById('bg1');
-        let audio2 = document.getElementById('bg2');
+        document.addEventListener('DOMContentLoaded', () => {
+            const audio1 = document.getElementById('bg1');
+            const audio2 = document.getElementById('bg2');
 
-        document.getElementById('start-btn').addEventListener('click', () => {
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('phase1').classList.remove('hidden');
-            audio1.play();
-            initMemoryGame();
-        });
-
-        /* --- MEMORY GAME LOGIC --- */
-        const cardsArray = ['card1.jpg', 'card 2.jpg', 'card 3.jpg', 'card1.jpg', 'card 2.jpg', 'card 3.jpg'];
-        let hasFlippedCard = false;
-        let lockBoard = false;
-        let firstCard, secondCard;
-        let matchedPairs = 0;
-
-        function initMemoryGame() {
-            const gameBoard = document.getElementById('memory-game');
-            // Shuffle cards
-            cardsArray.sort(() => 0.5 - Math.random());
-
-            cardsArray.forEach((imgSrc, index) => {
-                const card = document.createElement('div');
-                card.classList.add('memory-card');
-                card.dataset.framework = imgSrc;
-                card.innerHTML = `
-                    <div class="front-face" style="background-image: url('${imgSrc}')"></div>
-                    <div class="back-face">❤️</div>
-                `;
-                card.addEventListener('click', flipCard);
-                gameBoard.appendChild(card);
+            // --- START UP (with error handling so it doesn't break) ---
+            document.getElementById('start-btn').addEventListener('click', () => {
+                document.getElementById('start-screen').classList.add('hidden');
+                document.getElementById('phase1').classList.remove('hidden');
+                
+                // Safe Play Audio (Won't crash site if audio is missing)
+                const playPromise = audio1.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("Audio 1 failed to play. Continuing without music.", error);
+                    });
+                }
+                initMemoryGame();
             });
-        }
 
-        function flipCard() {
-            if (lockBoard) return;
-            if (this === firstCard) return;
+            // --- MEMORY GAME LOGIC ---
+            // Used %20 to safely handle files with spaces like "card 2.jpg" on GitHub pages
+            const cardsArray = ['card1.jpg', 'card%202.jpg', 'card%203.jpg', 'card1.jpg', 'card%202.jpg', 'card%203.jpg'];
+            let hasFlippedCard = false;
+            let lockBoard = false;
+            let firstCard, secondCard;
+            let matchedPairs = 0;
 
-            this.classList.add('flip');
+            function initMemoryGame() {
+                const gameBoard = document.getElementById('memory-game');
+                cardsArray.sort(() => 0.5 - Math.random()); // Shuffle
 
-            if (!hasFlippedCard) {
-                hasFlippedCard = true;
-                firstCard = this;
-                return;
+                cardsArray.forEach((imgSrc) => {
+                    const card = document.createElement('div');
+                    card.classList.add('memory-card');
+                    card.dataset.framework = imgSrc;
+                    card.innerHTML = `
+                        <div class="front-face" style="background-image: url('${imgSrc}')"></div>
+                        <div class="back-face">❤️</div>
+                    `;
+                    card.addEventListener('click', flipCard);
+                    gameBoard.appendChild(card);
+                });
             }
 
-            secondCard = this;
-            checkForMatch();
-        }
+            function flipCard() {
+                if (lockBoard) return;
+                if (this === firstCard) return;
 
-        function checkForMatch() {
-            let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
-            isMatch ? disableCards() : unflipCards();
-        }
+                this.classList.add('flip');
 
-        function disableCards() {
-            firstCard.removeEventListener('click', flipCard);
-            secondCard.removeEventListener('click', flipCard);
-            resetBoard();
-            matchedPairs++;
-            
-            if (matchedPairs === 3) {
-                setTimeout(() => {
-                    document.getElementById('scroll-container').classList.remove('hidden');
-                    document.getElementById('scroll-container').classList.add('fade-in');
-                    setTimeout(() => {
-                        document.getElementById('locker-container').classList.remove('hidden');
-                        document.getElementById('locker-container').classList.add('fade-in');
-                    }, 2000);
-                }, 1000);
+                if (!hasFlippedCard) {
+                    hasFlippedCard = true;
+                    firstCard = this;
+                    return;
+                }
+
+                secondCard = this;
+                checkForMatch();
             }
-        }
 
-        function unflipCards() {
-            lockBoard = true;
-            setTimeout(() => {
-                firstCard.classList.remove('flip');
-                secondCard.classList.remove('flip');
+            function checkForMatch() {
+                let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
+                isMatch ? disableCards() : unflipCards();
+            }
+
+            function disableCards() {
+                firstCard.removeEventListener('click', flipCard);
+                secondCard.removeEventListener('click', flipCard);
                 resetBoard();
-            }, 1000);
-        }
-
-        function resetBoard() {
-            [hasFlippedCard, lockBoard] = [false, false];
-            [firstCard, secondCard] = [null, null];
-        }
-
-        /* --- KEYPAD LOGIC --- */
-        let codeInput = "";
-        const display = document.getElementById('display');
-
-        function pressKey(num) {
-            if (codeInput.length < 4) {
-                codeInput += num;
-                display.innerText = "* ".repeat(codeInput.length);
+                matchedPairs++;
+                
+                if (matchedPairs === 3) {
+                    setTimeout(() => {
+                        const scroll = document.getElementById('scroll-container');
+                        scroll.classList.remove('hidden');
+                        scroll.classList.add('fade-in');
+                        
+                        setTimeout(() => {
+                            const locker = document.getElementById('locker-container');
+                            locker.classList.remove('hidden');
+                            locker.classList.add('fade-in');
+                        }, 1500);
+                    }, 800);
+                }
             }
-        }
 
-        function clearKey() {
-            codeInput = "";
-            display.innerText = "";
-        }
-
-        document.getElementById('hint-btn').addEventListener('click', () => {
-            document.getElementById('thought-popup').style.display = 'block';
-        });
-
-        function checkCode() {
-            if (codeInput === "2309") {
-                triggerPhase2();
-            } else {
-                display.innerText = "ERR";
-                display.style.color = "red";
+            function unflipCards() {
+                lockBoard = true;
                 setTimeout(() => {
-                    clearKey();
-                    display.style.color = "black";
+                    firstCard.classList.remove('flip');
+                    secondCard.classList.remove('flip');
+                    resetBoard();
                 }, 1000);
             }
-        }
 
-        /* --- PHASE 2 TRANSITION --- */
-        function triggerPhase2() {
-            // Audio Transition
-            audio1.pause();
-            audio2.play();
-
-            // UI Transition
-            document.getElementById('phase1').classList.add('hidden');
-            document.body.classList.add('expose-theme');
-            
-            const phase2 = document.getElementById('phase2');
-            phase2.classList.remove('hidden');
-            
-            setTimeout(() => {
-                phase2.style.opacity = 1;
-                initSlider();
-            }, 500);
-        }
-
-        /* --- SLIDER LOGIC --- */
-        let currentSlide = 0;
-        const totalSlides = 25;
-        const track = document.getElementById('slides-track');
-        let slideInterval;
-        let isAutoPlaying = true;
-
-        function initSlider() {
-            for (let i = 1; i <= totalSlides; i++) {
-                const slide = document.createElement('div');
-                slide.classList.add('slide');
-                slide.style.backgroundImage = `url('${i}.jpg')`;
-                track.appendChild(slide);
+            function resetBoard() {
+                [hasFlippedCard, lockBoard] = [false, false];
+                [firstCard, secondCard] = [null, null];
             }
-            startAutoSlide();
-        }
 
-        function updateSliderPosition() {
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
-            
-            // Show scratch card after last slide
-            if (currentSlide === totalSlides - 1) {
-                document.getElementById('scratch-container').style.display = 'block';
-                document.getElementById('scratch-container').classList.add('fade-in');
-                initScratchCard();
+            // --- KEYPAD LOGIC (Attached to window for inline onclick) ---
+            window.codeInput = "";
+            const display = document.getElementById('display');
+
+            window.pressKey = function(num) {
+                if (window.codeInput.length < 4) {
+                    window.codeInput += num;
+                    display.innerText = "* ".repeat(window.codeInput.length);
+                }
+            };
+
+            window.clearKey = function() {
+                window.codeInput = "";
+                display.innerText = "";
+            };
+
+            window.checkCode = function() {
+                if (window.codeInput === "2309") {
+                    triggerPhase2();
+                } else {
+                    display.innerText = "ERR";
+                    display.style.color = "red";
+                    setTimeout(() => {
+                        window.clearKey();
+                        display.style.color = "black";
+                    }, 800);
+                }
+            };
+
+            // --- PHASE 2 TRANSITION ---
+            function triggerPhase2() {
+                // Audio Switch
+                audio1.pause();
+                const playPromise = audio2.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(e => console.log("Audio 2 failed", e));
+                }
+
+                // UI Switch
+                document.getElementById('phase1').classList.add('hidden');
+                document.body.classList.add('expose-theme');
+                
+                const phase2 = document.getElementById('phase2');
+                phase2.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    phase2.style.opacity = 1;
+                    initSlider();
+                }, 500);
             }
-        }
 
-        function nextSlide() {
-            if (currentSlide < totalSlides - 1) {
-                currentSlide++;
-                updateSliderPosition();
-            } else {
+            // --- SMOOTH SLIDER LOGIC ---
+            let currentSlide = 0;
+            const totalSlides = 25;
+            const track = document.getElementById('slides-track');
+            let slideInterval;
+            let isAutoPlaying = true;
+
+            function initSlider() {
+                for (let i = 1; i <= totalSlides; i++) {
+                    const slide = document.createElement('div');
+                    slide.classList.add('slide');
+                    slide.style.backgroundImage = `url('${i}.jpg')`;
+                    track.appendChild(slide);
+                }
+                startAutoSlide();
+            }
+
+            function updateSliderPosition() {
+                track.style.transform = `translateX(-${currentSlide * 100}%)`;
+                
+                if (currentSlide === totalSlides - 1) {
+                    const scratch = document.getElementById('scratch-container');
+                    scratch.style.display = 'block';
+                    scratch.classList.add('fade-in');
+                    initScratchCard();
+                }
+            }
+
+            window.nextSlide = function() {
+                stopAutoSlide(); // Manual click stops auto
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateSliderPosition();
+                }
+            };
+
+            window.prevSlide = function() {
                 stopAutoSlide();
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSliderPosition();
+                }
+            };
+
+            function startAutoSlide() {
+                slideInterval = setInterval(() => {
+                    if (isAutoPlaying && currentSlide < totalSlides - 1) {
+                        currentSlide++;
+                        updateSliderPosition();
+                    } else {
+                        stopAutoSlide();
+                    }
+                }, 3500);
             }
-        }
 
-        function prevSlide() {
-            if (currentSlide > 0) {
-                currentSlide--;
-                updateSliderPosition();
-                stopAutoSlide(); // Manual intervention stops auto
+            function stopAutoSlide() {
+                isAutoPlaying = false;
+                clearInterval(slideInterval);
             }
-        }
 
-        function startAutoSlide() {
-            slideInterval = setInterval(() => {
-                if(isAutoPlaying) nextSlide();
-            }, 3000); // changes every 3 seconds smoothly
-        }
+            // --- SCRATCH CARD LOGIC ---
+            function initScratchCard() {
+                const canvas = document.getElementById('scratch-pad');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = 300;
+                canvas.height = 300;
 
-        function stopAutoSlide() {
-            isAutoPlaying = false;
-            clearInterval(slideInterval);
-        }
+                ctx.fillStyle = '#888888';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.font = "24px Arial";
+                ctx.fillStyle = "#ffffff";
+                ctx.textAlign = "center";
+                ctx.fillText("Scratch Here", canvas.width/2, canvas.height/2);
 
-        // Add manual event listeners to control buttons to stop auto-play
-        document.querySelectorAll('.ctrl-btn').forEach(btn => {
-            btn.addEventListener('click', stopAutoSlide);
+                let isDrawing = false;
+
+                function getMousePos(canvas, evt) {
+                    var rect = canvas.getBoundingClientRect();
+                    return {
+                        x: (evt.clientX || evt.touches?.[0].clientX) - rect.left,
+                        y: (evt.clientY || evt.touches?.[0].clientY) - rect.top
+                    };
+                }
+
+                function startPosition(e) {
+                    isDrawing = true;
+                    scratch(e);
+                }
+
+                function endPosition() {
+                    isDrawing = false;
+                    ctx.beginPath();
+                }
+
+                function scratch(e) {
+                    if (!isDrawing) return;
+                    e.preventDefault(); // Prevents screen scrolling while scratching on mobile
+                    
+                    const pos = getMousePos(canvas, e);
+                    
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineWidth = 45;
+                    ctx.lineCap = 'round';
+                    
+                    ctx.lineTo(pos.x, pos.y);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(pos.x, pos.y);
+                }
+
+                canvas.addEventListener('mousedown', startPosition);
+                canvas.addEventListener('mouseup', endPosition);
+                canvas.addEventListener('mousemove', scratch);
+                
+                canvas.addEventListener('touchstart', startPosition, {passive: false});
+                canvas.addEventListener('touchend', endPosition);
+                canvas.addEventListener('touchmove', scratch, {passive: false});
+            }
         });
-
-        /* --- SCRATCH CARD LOGIC --- */
-        function initScratchCard() {
-            const canvas = document.getElementById('scratch-pad');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = 300;
-            canvas.height = 300;
-
-            // Fill canvas with a silver overlay
-            ctx.fillStyle = '#888888';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Add some text over the scratch layer
-            ctx.font = "20px Arial";
-            ctx.fillStyle = "#ffffff";
-            ctx.textAlign = "center";
-            ctx.fillText("Scratch Here", canvas.width/2, canvas.height/2);
-
-            let isDrawing = false;
-
-            function getMousePos(canvas, evt) {
-                var rect = canvas.getBoundingClientRect();
-                return {
-                    x: (evt.clientX || evt.touches[0].clientX) - rect.left,
-                    y: (evt.clientY || evt.touches[0].clientY) - rect.top
-                };
-            }
-
-            function startPosition(e) {
-                isDrawing = true;
-                scratch(e);
-            }
-
-            function endPosition() {
-                isDrawing = false;
-                ctx.beginPath();
-            }
-
-            function scratch(e) {
-                if (!isDrawing) return;
-                e.preventDefault();
-                
-                const pos = getMousePos(canvas, e);
-                
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.lineWidth = 40;
-                ctx.lineCap = 'round';
-                
-                ctx.lineTo(pos.x, pos.y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(pos.x, pos.y);
-            }
-
-            canvas.addEventListener('mousedown', startPosition);
-            canvas.addEventListener('mouseup', endPosition);
-            canvas.addEventListener('mousemove', scratch);
-            
-            // Touch support for mobile
-            canvas.addEventListener('touchstart', startPosition);
-            canvas.addEventListener('touchend', endPosition);
-            canvas.addEventListener('touchmove', scratch);
-        }
-
     </script>
 </body>
 </html>
