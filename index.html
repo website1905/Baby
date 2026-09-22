@@ -1,25 +1,17 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday!</title>
+    <title>For My Baby ❤️</title>
     <style>
-        :root {
-            --bg-color: #ffe6f0;
-            --text-color: #ff4d88;
-            --accent-color: #ffb3cc;
-            --font-family: 'Comic Sans MS', cursive, sans-serif;
-            --transition-speed: 1.5s;
-        }
-
+        /* --- GLOBAL STYLES & SMOOTH TRANSITIONS --- */
         body {
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-family);
-            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffc0cb; /* Initial Pink */
+            transition: background-color 3s ease, background 3s ease;
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
@@ -27,132 +19,217 @@
             min-height: 100vh;
         }
 
-        /* Screen Management */
-        .screen {
-            display: none;
-            width: 100%;
-            max-width: 800px;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        .screen.active {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            opacity: 1;
+        body.expose-theme {
+            background-color: #4a0000;
+            background: linear-gradient(135deg, #4a0000 0%, #8b0000 100%);
+            color: white;
         }
 
-        /* Start Screen */
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 1.5s ease forwards; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- START SCREEN --- */
+        #start-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffe4e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
         #start-btn {
-            padding: 15px 30px;
+            padding: 15px 40px;
             font-size: 24px;
-            background-color: #ff4d88;
+            background: #ff69b4;
             color: white;
             border: none;
             border-radius: 30px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 77, 136, 0.4);
-            margin-top: 40vh;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
             transition: transform 0.3s ease;
         }
         #start-btn:hover { transform: scale(1.05); }
 
-        /* Memory Game */
-        .game-board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            gap: 15px;
-            margin: 20px auto;
-            justify-content: center;
+        /* --- PHASE 1: LOVE THEME --- */
+        #phase1 {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .card {
-            width: 100px;
-            height: 100px;
-            background-color: var(--accent-color);
-            border-radius: 15px;
-            cursor: pointer;
+
+        /* Memory Game */
+        .memory-game {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+            perspective: 1000px;
+        }
+        .memory-card {
+            width: 100%;
+            aspect-ratio: 1;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.6s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            cursor: pointer;
         }
-        .card.flipped { transform: rotateY(180deg); }
-        .card-face {
+        .memory-card.flip { transform: rotateY(180deg); }
+        .front-face, .back-face {
             width: 100%;
             height: 100%;
             position: absolute;
             backface-visibility: hidden;
             border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .front-face {
+            transform: rotateY(180deg);
+            background-size: cover;
+            background-position: center;
+        }
+        .back-face {
+            background: #ffb6c1;
             display: flex;
-            align-items: center;
             justify-content: center;
-            overflow: hidden;
-        }
-        .card-front { background-color: #ff99bb; font-size: 30px; color: white; }
-        .card-back { transform: rotateY(180deg); background-color: white; }
-        .card-back img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Scroll & Locker */
-        #scroll-section { display: none; margin-top: 30px; animation: fadeIn 1s forwards; }
-        .scroll-text { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px;}
-        
-        .locker { display: inline-block; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative;}
-        .pin-display { width: 100%; height: 40px; font-size: 24px; text-align: center; margin-bottom: 15px; border: 2px solid #ffe6f0; border-radius: 10px; background: #fafafa; letter-spacing: 5px; }
-        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .num-btn { padding: 15px; font-size: 20px; border: none; background: #ffe6f0; border-radius: 10px; cursor: pointer; color: #ff4d88; transition: 0.2s;}
-        .num-btn:hover { background: #ffb3cc; }
-        
-        .hint-btn { position: absolute; top: 20px; right: -60px; background: none; border: none; font-size: 24px; cursor: pointer; }
-        #thought-bubble { display: none; position: absolute; top: -100px; right: -120px; width: 150px; z-index: 10; animation: float 2s infinite ease-in-out; }
-        #thought-bubble img { width: 100%; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-
-        /* Expose Phase - Smooth Dark Red */
-        body.expose-theme {
-            --bg-color: #1a0000;
-            --text-color: #ffb3b3;
-            --accent-color: #4d0000;
-            background: linear-gradient(135deg, #2b0000 0%, #1a0000 100%);
+            align-items: center;
+            font-size: 40px;
+            color: white;
         }
 
-        /* Gallery */
-        .gallery-container {
+        /* Scroll Text */
+        #scroll-container {
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px dashed #ff69b4;
+            opacity: 0;
+        }
+
+        /* Keypad */
+        #locker-container {
+            margin-top: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            display: inline-block;
+            opacity: 0;
+        }
+        #display {
+            width: 100%;
+            height: 50px;
+            background: #f0f0f0;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            font-size: 28px;
+            line-height: 50px;
+            letter-spacing: 5px;
+            text-align: center;
+        }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .key {
+            padding: 15px;
+            font-size: 20px;
+            background: #ffb6c1;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .key:active { background: #ff69b4; }
+        
+        .hint-container {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        #hint-btn {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+        #thought-popup {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 100;
+            display: none;
+        }
+        #thought-popup img { max-width: 200px; border-radius: 10px; }
+
+        /* --- PHASE 2: EXPOSE THEME --- */
+        #phase2 {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        /* Slider */
+        .slider-container {
+            position: relative;
             width: 100%;
             max-width: 400px;
-            height: 700px; /* Adjust based on screenshot aspect ratio */
+            margin: 0 auto;
+            aspect-ratio: 9/16;
             overflow: hidden;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: relative;
-            margin: 0 auto;
+            background: #000;
         }
-        .gallery-track {
+        .slides {
             display: flex;
             height: 100%;
-            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); /* Very smooth sliding */
+            transition: transform 0.8s ease-in-out;
         }
         .slide {
             min-width: 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         .controls {
+            margin-top: 20px;
             display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 400px;
-            margin-top: 15px;
+            justify-content: center;
+            gap: 20px;
         }
-        .ctrl-btn { background: #4d0000; color: #ffb3b3; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .ctrl-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .ctrl-btn:hover { background: white; color: black; }
 
         /* Scratch Card */
         #scratch-container {
@@ -160,134 +237,142 @@
             width: 300px;
             height: 300px;
             margin: 40px auto;
-            display: none;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none;
         }
-        #scratch-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        #scratch-canvas { position: absolute; top: 0; left: 0; cursor: pointer; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0); } }
-
+        #gift-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0; left: 0;
+        }
+        #scratch-pad {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            cursor: pointer;
+        }
+        
     </style>
 </head>
 <body>
 
     <!-- Audio Elements -->
-    <audio id="bgMusic1" src="bg1.mp3" loop></audio>
-    <audio id="bgMusic2" src="bg2.mp3" loop></audio>
+    <audio id="bg1" loop src="bg1.mp3"></audio>
+    <audio id="bg2" loop src="bg2.mp3"></audio>
 
-    <!-- Start Screen (Required for Audio on GitHub) -->
-    <div id="screen-start" class="screen active">
-        <button id="start-btn" onclick="startExperience()">Click for your surprise! 💖</button>
+    <!-- Start Screen (To fix Autoplay issues) -->
+    <div id="start-screen">
+        <button id="start-btn">Open Surprise For My Baby ❤️</button>
     </div>
 
-    <!-- Phase 1: Love Theme -->
-    <div id="screen-love" class="screen">
-        <h2>Match the cards baby! 🎀</h2>
-        <div class="game-board" id="game-board"></div>
-
-        <div id="scroll-section">
-            <div class="scroll-text">
-                <p>Thank you for always being there for me...</p>
-                <p>I have a special gift for you, but you need to open the locker first!</p>
-            </div>
-            
-            <div class="locker">
-                <button class="hint-btn" onclick="toggleHint()" title="My baby's birthday!">💡</button>
-                <div id="thought-bubble">
-                    <img src="thought.png" alt="Hint">
-                </div>
-                
-                <input type="text" id="pin-input" class="pin-display" readonly maxlength="4" placeholder="****">
-                <div class="numpad">
-                    <button class="num-btn" onclick="addPin(1)">1</button>
-                    <button class="num-btn" onclick="addPin(2)">2</button>
-                    <button class="num-btn" onclick="addPin(3)">3</button>
-                    <button class="num-btn" onclick="addPin(4)">4</button>
-                    <button class="num-btn" onclick="addPin(5)">5</button>
-                    <button class="num-btn" onclick="addPin(6)">6</button>
-                    <button class="num-btn" onclick="addPin(7)">7</button>
-                    <button class="num-btn" onclick="addPin(8)">8</button>
-                    <button class="num-btn" onclick="addPin(9)">9</button>
-                    <button class="num-btn" onclick="clearPin()">C</button>
-                    <button class="num-btn" onclick="addPin(0)">0</button>
-                    <button class="num-btn" onclick="checkPin()">OK</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Phase 2: Expose Theme -->
-    <div id="screen-expose" class="screen">
-        <h2 style="margin-bottom: 5px;">The Truth.</h2>
-        <p style="font-size: 14px; margin-top: 0;">(Auto-playing...)</p>
+    <!-- PHASE 1: LOVE THEME -->
+    <div id="phase1" class="hidden">
+        <h2 style="color: #ff1493;">Let's play a little game first, my love!</h2>
         
-        <div class="gallery-container">
-            <div class="gallery-track" id="gallery-track">
-                <!-- Javascript will inject 25 slides here -->
+        <div class="memory-game" id="memory-game">
+            <!-- Cards generated by JS -->
+        </div>
+
+        <div id="scroll-container" class="hidden">
+            <h3 style="color: #ff1493; margin-top:0;">Thank you...</h3>
+            <p style="color: #555; line-height: 1.6;">
+                Thank you for being there for me. Thank you for all the memories we've shared. 
+                I have a very special surprise locked away just for you.
+            </p>
+        </div>
+
+        <div id="locker-container" class="hidden">
+            <div id="display"></div>
+            <div class="keypad">
+                <button class="key" onclick="pressKey(1)">1</button>
+                <button class="key" onclick="pressKey(2)">2</button>
+                <button class="key" onclick="pressKey(3)">3</button>
+                <button class="key" onclick="pressKey(4)">4</button>
+                <button class="key" onclick="pressKey(5)">5</button>
+                <button class="key" onclick="pressKey(6)">6</button>
+                <button class="key" onclick="pressKey(7)">7</button>
+                <button class="key" onclick="pressKey(8)">8</button>
+                <button class="key" onclick="pressKey(9)">9</button>
+                <button class="key" onclick="clearKey()">C</button>
+                <button class="key" onclick="pressKey(0)">0</button>
+                <button class="key" style="background: #ff69b4; color:white;" onclick="checkCode()">OK</button>
+            </div>
+            <div class="hint-container">
+                <button id="hint-btn">Hint: My baby's birthday</button>
             </div>
         </div>
+    </div>
+
+    <!-- Hint Popup -->
+    <div id="thought-popup">
+        <img src="thought.png" alt="Thought Bubble">
+        <br>
+        <button onclick="document.getElementById('thought-popup').style.display='none'" style="margin-top:10px; padding:5px 15px; border-radius:10px; border:none; background:#ffb6c1;">Close</button>
+    </div>
+
+    <!-- PHASE 2: EXPOSE THEME -->
+    <div id="phase2" class="hidden">
+        <h2>The Truth.</h2>
+        <p style="font-style: italic; opacity: 0.8;">Did you really think I wouldn't find out?</p>
+        
+        <div class="slider-container">
+            <div class="slides" id="slides-track">
+                <!-- Slides generated by JS -->
+            </div>
+        </div>
+        
         <div class="controls">
             <button class="ctrl-btn" onclick="prevSlide()">❮ Prev</button>
             <button class="ctrl-btn" onclick="nextSlide()">Next ❯</button>
         </div>
 
         <div id="scratch-container">
-            <img id="scratch-image" src="gift.jpg" alt="Gift">
-            <canvas id="scratch-canvas"></canvas>
+            <img src="gift.jpg" id="gift-image" alt="Gift">
+            <canvas id="scratch-pad"></canvas>
+            <p style="position: absolute; bottom: -30px; width: 100%; text-align: center; color: white;">Scratch to reveal your gift.</p>
         </div>
     </div>
 
     <script>
-        // --- 1. Audio and Screen Management ---
-        const bg1 = document.getElementById('bgMusic1');
-        const bg2 = document.getElementById('bgMusic2');
+        /* --- GLOBAL VARIABLES & START UP --- */
+        let audio1 = document.getElementById('bg1');
+        let audio2 = document.getElementById('bg2');
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => {
-                s.classList.remove('active');
-                setTimeout(() => s.style.display = 'none', 500); // Wait for fade out
-            });
-            setTimeout(() => {
-                const screen = document.getElementById(screenId);
-                screen.style.display = 'flex';
-                // Small delay to allow display:flex to apply before adding opacity class
-                setTimeout(() => screen.classList.add('active'), 50);
-            }, 500);
-        }
+        document.getElementById('start-btn').addEventListener('click', () => {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('phase1').classList.remove('hidden');
+            audio1.play();
+            initMemoryGame();
+        });
 
-        function startExperience() {
-            bg1.play().catch(e => console.log("Audio play failed:", e));
-            showScreen('screen-love');
-            initGame();
-        }
-
-        // --- 2. Memory Game Logic ---
+        /* --- MEMORY GAME LOGIC --- */
         const cardsArray = ['card1.jpg', 'card 2.jpg', 'card 3.jpg', 'card1.jpg', 'card 2.jpg', 'card 3.jpg'];
         let hasFlippedCard = false;
         let lockBoard = false;
         let firstCard, secondCard;
         let matchedPairs = 0;
 
-        function initGame() {
-            const board = document.getElementById('game-board');
-            board.innerHTML = '';
-            // Shuffle
+        function initMemoryGame() {
+            const gameBoard = document.getElementById('memory-game');
+            // Shuffle cards
             cardsArray.sort(() => 0.5 - Math.random());
-            
-            cardsArray.forEach((img, index) => {
+
+            cardsArray.forEach((imgSrc, index) => {
                 const card = document.createElement('div');
-                card.classList.add('card');
-                card.dataset.name = img;
+                card.classList.add('memory-card');
+                card.dataset.framework = imgSrc;
                 card.innerHTML = `
-                    <div class="card-face card-front">?</div>
-                    <div class="card-face card-back"><img src="${img}" alt="card"></div>
+                    <div class="front-face" style="background-image: url('${imgSrc}')"></div>
+                    <div class="back-face">❤️</div>
                 `;
                 card.addEventListener('click', flipCard);
-                board.appendChild(card);
+                gameBoard.appendChild(card);
             });
         }
 
@@ -295,7 +380,7 @@
             if (lockBoard) return;
             if (this === firstCard) return;
 
-            this.classList.add('flipped');
+            this.classList.add('flip');
 
             if (!hasFlippedCard) {
                 hasFlippedCard = true;
@@ -308,389 +393,7 @@
         }
 
         function checkForMatch() {
-            let isMatch = firstCard.dataset.name === secondCard.dataset.name;
-            isMatch ? disableHere is the complete, compiled code for your interactive website. 
-
-### Why the audio wasn't working on GitHub:
-Modern web browsers (like Chrome and Safari) have strict autoplay policies that prevent audio from playing automatically without the user interacting with the page first. To fix this, I have added an initial "Start" button. Once he clicks it, the browser gives permission for `bg1.mp3` to play, and subsequently `bg2.mp3`.
-
-### Instructions:
-1. Create a file named `index.html` in your GitHub repository.
-2. Copy and paste the entire code below into that file.
-3. Ensure all your files (`1.jpg` to `25.jpg`, `bg1.mp3`, `bg2.mp3`, `card1.jpg`, `card2.jpg`, `card3.jpg`, `thought.png`, and `gift.jpg`) are in the **exact same folder** as `index.html` and that the extensions and casing match exactly (e.g., lowercase `.jpg` vs `.JPG`).
-
-### The Code (`index.html`)
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For You 💖</title>
-    <style>
-        :root {
-            --bg-color: #ffd1dc; /* Soft pink */
-            --text-color: #d1495b;
-            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-family);
-            transition: background-color 2s ease, color 2s ease;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .dark-theme {
-            --bg-color: #2b0000; /* Dark red/fire */
-            --text-color: #ff4d4d;
-        }
-
-        .hidden { display: none !important; }
-        
-        .section {
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-            animation: fadeIn 1s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Start Screen */
-        #start-screen {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        button.start-btn {
-            background-color: #ff6b81;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 107, 129, 0.4);
-            transition: transform 0.2s;
-        }
-        button.start-btn:active { transform: scale(0.95); }
-
-        /* Memory Game */
-        .memory-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-        }
-        .card {
-            width: 100px;
-            height: 100px;
-            background-color: #fff;
-            border-radius: 10px;
-            cursor: pointer;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .card.flipped { transform: rotateY(180deg); }
-        .card img {
-            width: 100%;
-            height: 100%;
-            border-radius: 10px;
-            position: absolute;
-            backface-visibility: hidden;
-            object-fit: cover;
-        }
-        .card-front {
-            background-color: #ff9fb3;
-            width: 100%;
-            height: 100%;
-            border-radius: 10px;
-            position: absolute;
-            backface-visibility: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            color: white;
-        }
-        .card-back {
-            transform: rotateY(180deg);
-        }
-
-        /* Scroll Text */
-        .scroll-container {
-            margin-top: 30px;
-            background: rgba(255, 255, 255, 0.6);
-            padding: 20px;
-            border-radius: 15px;
-            font-size: 18px;
-            line-height: 1.6;
-        }
-
-        /* Numpad */
-        .locker-container { margin-top: 40px; }
-        .display {
-            font-size: 30px;
-            letter-spacing: 10px;
-            background: #fff;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            min-height: 40px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .numpad {
-            display: grid;
-            grid-template-columns: repeat(3, 70px);
-            gap: 15px;
-            justify-content: center;
-        }
-        .numpad button {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: none;
-            background: #ff6b81;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .numpad button:active { background: #ff4757; }
-        .hint-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #ffa502;
-            color: white;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-        }
-        #thought-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 100;
-            background: white;
-            padding: 10px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        #thought-popup img { max-width: 200px; border-radius: 10px; }
-
-        /* Gallery */
-        .gallery-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            height: 600px; /* Adjust based on screenshot ratio */
-            margin: 20px auto;
-            overflow: hidden;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            background: #000;
-        }
-        .slide {
-            position: absolute;
-            top: 0;
-            left: 100%;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: left 0.8s ease-in-out;
-        }
-        .slide.active { left: 0; }
-        .slide.prev { left: -100%; }
-        
-        .controls {
-            margin-top: 15px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .controls button {
-            background: #333;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        /* Scratch Card */
-        .scratch-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 40px auto;
-        }
-        .scratch-image {
-            width: 100%;
-            height: 100%;
-            border-radius: 15px;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
-        #scratch-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 15px;
-            cursor: crosshair;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Audio Elements -->
-    <audio id="bg1" src="bg1.mp3" loop></audio>
-    <audio id="bg2" src="bg2.mp3" loop></audio>
-
-    <!-- Start Button to fix Audio Policy -->
-    <div id="start-screen" class="section">
-        <button class="start-btn" onclick="startExperience()">Click for a Surprise 💖</button>
-    </div>
-
-    <!-- Phase 1: Memory Game -->
-    <div id="phase1" class="section hidden">
-        <h2>Match our memories 💕</h2>
-        <div class="memory-grid" id="grid"></div>
-        
-        <!-- Scroll (Appears after game) -->
-        <div id="scroll" class="scroll-container hidden">
-            <p>Thank you for being there for me...</p>
-            <p>I have a special gift for you, but you have to unlock it!</p>
-            <button class="start-btn" style="margin-top: 15px;" onclick="showLocker()">Unlock Gift 🔐</button>
-        </div>
-    </div>
-
-    <!-- Phase 2: Locker -->
-    <div id="phase2" class="section hidden">
-        <h2>Enter the secret code</h2>
-        <div class="locker-container">
-            <div class="display" id="pass-display">_ _ _ _</div>
-            <div class="numpad">
-                <button onclick="pressKey(1)">1</button>
-                <button onclick="pressKey(2)">2</button>
-                <button onclick="pressKey(3)">3</button>
-                <button onclick="pressKey(4)">4</button>
-                <button onclick="pressKey(5)">5</button>
-                <button onclick="pressKey(6)">6</button>
-                <button onclick="pressKey(7)">7</button>
-                <button onclick="pressKey(8)">8</button>
-                <button onclick="pressKey(9)">9</button>
-                <button onclick="clearKey()">C</button>
-                <button onclick="pressKey(0)">0</button>
-                <button onclick="checkCode()">OK</button>
-            </div>
-            <button class="hint-btn" onclick="toggleHint()">My baby's birthday 💭</button>
-        </div>
-    </div>
-
-    <!-- Hint Popup -->
-    <div id="thought-popup" class="hidden">
-        <img src="thought.png" alt="Hint">
-        <br>
-        <button onclick="toggleHint()" style="margin-top: 10px; border:none; padding:5px 15px; border-radius:5px;">Close</button>
-    </div>
-
-    <!-- Phase 3: The Reveal -->
-    <div id="phase3" class="section hidden">
-        <h2 style="color: #fff;">The Truth.</h2>
-        <div class="gallery-container" id="gallery">
-            <!-- Images injected via JS -->
-        </div>
-        <div class="controls">
-            <button onclick="manualSlide(-1)">❮ Prev</button>
-            <button onclick="manualSlide(1)">Next ❯</button>
-        </div>
-    </div>
-
-    <!-- Phase 4: Scratch Card -->
-    <div id="phase4" class="section hidden">
-        <h2 style="color: #fff;">Here is your final gift. Scratch to reveal.</h2>
-        <div class="scratch-container">
-            <img src="gift.jpg" class="scratch-image" alt="Gift">
-            <canvas id="scratch-canvas"></canvas>
-        </div>
-    </div>
-
-    <script>
-        /* --- State Variables --- */
-        let code = "";
-        const correctCode = "2309";
-        
-        /* --- Audio & Start Logic --- */
-        function startExperience() {
-            document.getElementById('start-screen').classList.add('hidden');
-            document.getElementById('phase1').classList.remove('hidden');
-            document.getElementById('bg1').play();
-            initGame();
-        }
-
-        /* --- Memory Game Logic --- */
-        const cardsArray = ['card1.jpg', 'card1.jpg', 'card2.jpg', 'card2.jpg', 'card3.jpg', 'card3.jpg'];
-        let firstCard = null, secondCard = null;
-        let matches = 0;
-        let lockBoard = false;
-
-        function initGame() {
-            const grid = document.getElementById('grid');
-            // Shuffle array
-            cardsArray.sort(() => 0.5 - Math.random());
-            
-            cardsArray.forEach((imgSrc) => {
-                const card = document.createElement('div');
-                card.classList.add('card');
-                card.dataset.image = imgSrc;
-                card.innerHTML = `
-                    <div class="card-front">?</div>
-                    <div class="card-back"><img src="${imgSrc}" alt="Card"></div>
-                `;
-                card.addEventListener('click', flipCard);
-                grid.appendChild(card);
-            });
-        }
-
-        function flipCard() {
-            if (lockBoard) return;
-            if (this === firstCard) return;
-
-            this.classList.add('flipped');
-
-            if (!firstCard) {
-                firstCard = this;
-                return;
-            }
-            secondCard = this;
-            checkMatch();
-        }
-
-        function checkMatch() {
-            let isMatch = firstCard.dataset.image === secondCard.dataset.image;
+            let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
             isMatch ? disableCards() : unflipCards();
         }
 
@@ -698,10 +401,16 @@ Modern web browsers (like Chrome and Safari) have strict autoplay policies that 
             firstCard.removeEventListener('click', flipCard);
             secondCard.removeEventListener('click', flipCard);
             resetBoard();
-            matches++;
-            if (matches === 3) {
+            matchedPairs++;
+            
+            if (matchedPairs === 3) {
                 setTimeout(() => {
-                    document.getElementById('scroll').classList.remove('hidden');
+                    document.getElementById('scroll-container').classList.remove('hidden');
+                    document.getElementById('scroll-container').classList.add('fade-in');
+                    setTimeout(() => {
+                        document.getElementById('locker-container').classList.remove('hidden');
+                        document.getElementById('locker-container').classList.add('fade-in');
+                    }, 2000);
                 }, 1000);
             }
         }
@@ -709,169 +418,194 @@ Modern web browsers (like Chrome and Safari) have strict autoplay policies that 
         function unflipCards() {
             lockBoard = true;
             setTimeout(() => {
-                firstCard.classList.remove('flipped');
-                secondCard.classList.remove('flipped');
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
                 resetBoard();
             }, 1000);
         }
 
         function resetBoard() {
-            [firstCard, secondCard, lockBoard] = [null, null, false];
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
         }
 
-        /* --- Locker Logic --- */
-        function showLocker() {
-            document.getElementById('phase1').classList.add('hidden');
-            document.getElementById('phase2').classList.remove('hidden');
-        }
+        /* --- KEYPAD LOGIC --- */
+        let codeInput = "";
+        const display = document.getElementById('display');
 
         function pressKey(num) {
-            if (code.length < 4) {
-                code += num;
-                updateDisplay();
+            if (codeInput.length < 4) {
+                codeInput += num;
+                display.innerText = "* ".repeat(codeInput.length);
             }
         }
+
         function clearKey() {
-            code = "";
-            updateDisplay();
-        }
-        function updateDisplay() {
-            let displayStr = code.split('').join(' ');
-            while (displayStr.length < 7) { displayStr += " _"; }
-            document.getElementById('pass-display').innerText = displayStr;
+            codeInput = "";
+            display.innerText = "";
         }
 
-        function toggleHint() {
-            document.getElementById('thought-popup').classList.toggle('hidden');
-        }
+        document.getElementById('hint-btn').addEventListener('click', () => {
+            document.getElementById('thought-popup').style.display = 'block';
+        });
 
         function checkCode() {
-            if (code === correctCode) {
-                document.getElementById('phase2').classList.add('hidden');
-                triggerExpose();
+            if (codeInput === "2309") {
+                triggerPhase2();
             } else {
-                document.getElementById('pass-display').innerText = "WRONG";
-                document.getElementById('pass-display').style.color = "red";
+                display.innerText = "ERR";
+                display.style.color = "red";
                 setTimeout(() => {
-                    document.getElementById('pass-display').style.color = "var(--text-color)";
                     clearKey();
+                    display.style.color = "black";
                 }, 1000);
             }
         }
 
-        /* --- Reveal & Gallery Logic --- */
-        let currentSlide = 1;
+        /* --- PHASE 2 TRANSITION --- */
+        function triggerPhase2() {
+            // Audio Transition
+            audio1.pause();
+            audio2.play();
+
+            // UI Transition
+            document.getElementById('phase1').classList.add('hidden');
+            document.body.classList.add('expose-theme');
+            
+            const phase2 = document.getElementById('phase2');
+            phase2.classList.remove('hidden');
+            
+            setTimeout(() => {
+                phase2.style.opacity = 1;
+                initSlider();
+            }, 500);
+        }
+
+        /* --- SLIDER LOGIC --- */
+        let currentSlide = 0;
+        const totalSlides = 25;
+        const track = document.getElementById('slides-track');
         let slideInterval;
+        let isAutoPlaying = true;
 
-        function triggerExpose() {
-            // Theme change
-            document.body.classList.add('dark-theme');
-            document.getElementById('bg1').pause();
-            document.getElementById('bg2').play();
-            
-            document.getElementById('phase3').classList.remove('hidden');
-            
-            // Build Gallery
-            const gallery = document.getElementById('gallery');
-            for(let i = 1; i <= 25; i++) {
-                const img = document.createElement('img');
-                img.src = `${i}.jpg`;
-                img.classList.add('slide');
-                img.id = `slide-${i}`;
-                if(i === 1) img.classList.add('active');
-                gallery.appendChild(img);
+        function initSlider() {
+            for (let i = 1; i <= totalSlides; i++) {
+                const slide = document.createElement('div');
+                slide.classList.add('slide');
+                slide.style.backgroundImage = `url('${i}.jpg')`;
+                track.appendChild(slide);
             }
+            startAutoSlide();
+        }
 
-            // Start auto slide
-            slideInterval = setInterval(() => { nextSlide() }, 3000);
+        function updateSliderPosition() {
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Show scratch card after last slide
+            if (currentSlide === totalSlides - 1) {
+                document.getElementById('scratch-container').style.display = 'block';
+                document.getElementById('scratch-container').classList.add('fade-in');
+                initScratchCard();
+            }
         }
 
         function nextSlide() {
-            let oldSlide = document.getElementById(`slide-${currentSlide}`);
-            oldSlide.classList.remove('active');
-            oldSlide.classList.add('prev');
-
-            currentSlide++;
-            
-            if (currentSlide > 25) {
-                clearInterval(slideInterval);
-                showScratchCard();
-                return;
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSliderPosition();
+            } else {
+                stopAutoSlide();
             }
-            
-            let newSlide = document.getElementById(`slide-${currentSlide}`);
-            newSlide.classList.remove('prev');
-            newSlide.classList.add('active');
         }
 
-        function manualSlide(dir) {
-            clearInterval(slideInterval); // Stop auto if user interacts
-            
-            let oldSlide = document.getElementById(`slide-${currentSlide}`);
-            oldSlide.classList.remove('active');
-            if(dir > 0) oldSlide.classList.add('prev');
-            
-            currentSlide += dir;
-            if (currentSlide < 1) currentSlide = 1;
-            
-            if (currentSlide > 25) {
-                showScratchCard();
-                return;
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSliderPosition();
+                stopAutoSlide(); // Manual intervention stops auto
             }
-
-            let newSlide = document.getElementById(`slide-${currentSlide}`);
-            newSlide.classList.remove('prev');
-            newSlide.classList.add('active');
         }
 
-        /* --- Scratch Card Logic --- */
-        function showScratchCard() {
-            document.getElementById('phase3').classList.add('hidden');
-            document.getElementById('phase4').classList.remove('hidden');
-            initScratch();
+        function startAutoSlide() {
+            slideInterval = setInterval(() => {
+                if(isAutoPlaying) nextSlide();
+            }, 3000); // changes every 3 seconds smoothly
         }
 
-        function initScratch() {
-            const canvas = document.getElementById('scratch-canvas');
+        function stopAutoSlide() {
+            isAutoPlaying = false;
+            clearInterval(slideInterval);
+        }
+
+        // Add manual event listeners to control buttons to stop auto-play
+        document.querySelectorAll('.ctrl-btn').forEach(btn => {
+            btn.addEventListener('click', stopAutoSlide);
+        });
+
+        /* --- SCRATCH CARD LOGIC --- */
+        function initScratchCard() {
+            const canvas = document.getElementById('scratch-pad');
             const ctx = canvas.getContext('2d');
             
-            // Set canvas size to match CSS size
             canvas.width = 300;
             canvas.height = 300;
-            
-            // Fill with dark gray cover
-            ctx.fillStyle = '#444';
+
+            // Fill canvas with a silver overlay
+            ctx.fillStyle = '#888888';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Add instructions on top
-            ctx.fillStyle = '#fff';
-            ctx.font = '20px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Scratch Here', 150, 150);
+            // Add some text over the scratch layer
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "#ffffff";
+            ctx.textAlign = "center";
+            ctx.fillText("Scratch Here", canvas.width/2, canvas.height/2);
 
             let isDrawing = false;
+
+            function getMousePos(canvas, evt) {
+                var rect = canvas.getBoundingClientRect();
+                return {
+                    x: (evt.clientX || evt.touches[0].clientX) - rect.left,
+                    y: (evt.clientY || evt.touches[0].clientY) - rect.top
+                };
+            }
+
+            function startPosition(e) {
+                isDrawing = true;
+                scratch(e);
+            }
+
+            function endPosition() {
+                isDrawing = false;
+                ctx.beginPath();
+            }
 
             function scratch(e) {
                 if (!isDrawing) return;
                 e.preventDefault();
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.clientX || e.touches[0].clientX) - rect.left;
-                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                
+                const pos = getMousePos(canvas, e);
                 
                 ctx.globalCompositeOperation = 'destination-out';
+                ctx.lineWidth = 40;
+                ctx.lineCap = 'round';
+                
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
                 ctx.beginPath();
-                ctx.arc(x, y, 20, 0, Math.PI * 2, false);
-                ctx.fill();
+                ctx.moveTo(pos.x, pos.y);
             }
 
-            canvas.addEventListener('mousedown', () => isDrawing = true);
-            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mousedown', startPosition);
+            canvas.addEventListener('mouseup', endPosition);
             canvas.addEventListener('mousemove', scratch);
             
-            canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); });
-            canvas.addEventListener('touchend', () => isDrawing = false);
+            // Touch support for mobile
+            canvas.addEventListener('touchstart', startPosition);
+            canvas.addEventListener('touchend', endPosition);
             canvas.addEventListener('touchmove', scratch);
         }
+
     </script>
 </body>
 </html>
